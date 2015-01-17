@@ -108,6 +108,26 @@ unsigned UndirectedGraph::edge_weight(unsigned first_vertex_id,
   }
 };  
 
+unsigned  UndirectedGraph::path_weight(std::list<unsigned> path) const{
+  unsigned weight = 0;
+
+  if(path.empty()){
+    return weight;
+  }
+
+  auto vertex_iter = path.cbegin();
+  unsigned vertex = *vertex_iter;
+  unsigned next_vertex;
+  while(++vertex_iter != path.cend()){
+    next_vertex = *vertex_iter;
+    weight += this->edge_weight(vertex, next_vertex);
+
+    vertex = next_vertex;
+  }
+
+  return weight;
+};
+
 std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
                                                      unsigned second_vertex_id) const{
 

@@ -97,5 +97,6 @@ int main(int argc, char **argv){
   for(auto v = path.begin(); v != path.end(); v++){
     std::cout << *v << " ; ";
   }
-  std::cout << std::endl;
+  
+  std::cout << "weight = " << g.path_weight(path) << std::endl;
 }
