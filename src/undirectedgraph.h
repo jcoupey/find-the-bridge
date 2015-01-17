@@ -90,8 +90,11 @@ public:
   unsigned path_weight(std::list<unsigned> path) const;
 
   std::list<unsigned> shortest_path(unsigned first_vertex_id,
-                                      unsigned second_vertex_id) const;
-  
+                                    unsigned second_vertex_id) const;
+
+  std::list<unsigned> smallest_path(unsigned first_vertex_id,
+                                    unsigned second_vertex_id) const;
+
   void log() const;
 };
 

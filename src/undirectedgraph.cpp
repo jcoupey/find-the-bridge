@@ -255,7 +255,86 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
   
   return path;
 };
+
+std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex_id,
+                                                   unsigned second_vertex_id) const{
+
+  if(first_vertex_id == second_vertex_id){
+    // Not really interesting
+    std::list<unsigned> path ({first_vertex_id});
+    return path;
+  }
+
+  // Applying breadth-first search
+
+  // Storing found vertices to avoid cycles
+  std::set<unsigned> found_vertices ({first_vertex_id});
+
+  // Remembering "parent" vertex
+  std::map<unsigned, unsigned> parent_vertex;
+
+  // FIFO list of vertices yet to visit
+  std::list<unsigned> vertices_to_visit ({first_vertex_id});
+
+  // Neighbours of current vertex
+  std::list<unsigned> current_neighbours;
+
+  bool found_end = false;
   
+  while(!vertices_to_visit.empty()){
+    // Visiting "first in" vertex
+    unsigned current_vertex = vertices_to_visit.front();
+    current_neighbours = this->neighbours_for_vertex(current_vertex);
+
+    // Adding neighbours for further visiting
+    for(auto neighbour = current_neighbours.cbegin();
+        neighbour != current_neighbours.cend();
+        neighbour++){
+      unsigned neighbour_id = *neighbour;
+      if(found_vertices.find(neighbour_id) == found_vertices.end()){
+        // Vertex not yet found
+        found_vertices.insert(neighbour_id);
+        vertices_to_visit.push_back(neighbour_id);
+        // Storing parent vertex
+        parent_vertex.emplace(neighbour_id, current_vertex);
+
+        if(neighbour_id == second_vertex_id){
+          // Found a path to second_vertex_id with smallest number of edges
+          found_end = true;
+        }
+      }
+    }
+    if(found_end){
+      break;
+    }
+
+    // Removing "first in" vertex
+    vertices_to_visit.pop_front();
+  }
+
+  // Recomposing path from the end
+  std::list<unsigned> path;
+
+  if(!found_end){
+    // Argument vertices are not connected, return empty path
+    return path;
+  }
+  
+  unsigned current_vertex = second_vertex_id;
+  // Adding the end
+  path.push_front(current_vertex);
+  
+  while(current_vertex != first_vertex_id){
+    // Getting parent vertex
+    current_vertex = parent_vertex.find(current_vertex)->second;
+    // Adding
+    path.push_front(current_vertex);
+  }
+  
+  return path;
+};
+
+
 void UndirectedGraph::log() const{
   std::cout << "****************** Graph log ******************\n"
     << "* Vertices:\n";

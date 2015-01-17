@@ -90,7 +90,7 @@ int main(int argc, char **argv){
   std::list<unsigned> path = g.shortest_path(start, end);
 
   std::cout << "*******************\n"
-            << "Shortest path between "
+            << "Shortest path (distance) between "
             << start << " and " << end << ": "
             << std::endl;
   
@@ -99,4 +99,18 @@ int main(int argc, char **argv){
   }
   
   std::cout << "weight = " << g.path_weight(path) << std::endl;
+
+  std::list<unsigned> bfs_path = g.smallest_path(start, end);
+
+  std::cout << "*******************\n"
+            << "Smallest path (number of edges) between "
+            << start << " and " << end << ": "
+            << std::endl;
+  
+  for(auto v = bfs_path.begin(); v != bfs_path.end(); v++){
+    std::cout << *v << " ; ";
+  }
+  
+  std::cout << "weight = " << g.path_weight(bfs_path) << std::endl;
+
 }
