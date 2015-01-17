@@ -6,7 +6,7 @@
 #include <set>
 #include <list>
 #include <map>
-#include <array>
+#include <limits>
 #include "exceptions.h"
 
 class UndirectedGraph{
@@ -81,7 +81,14 @@ public:
 
   void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);
 
-  bool has_edge(unsigned first_vertex_id, unsigned second_vertex_id) const;
+  bool has_edge(unsigned first_vertex_id,
+                unsigned second_vertex_id) const;
+
+  unsigned edge_weight(unsigned first_vertex_id,
+                       unsigned second_vertex_id) const;
+
+  std::list<unsigned> shortest_path(unsigned first_vertex_id,
+                                      unsigned second_vertex_id) const;
   
   void log() const;
 };

@@ -55,6 +55,7 @@ int main(int argc, char **argv){
   g.add_edge(1, 6, 3);
   g.add_edge(2, 3, 2);
   g.add_edge(2, 6, 1);
+  g.add_edge(3, 4, 6);
   g.add_edge(3, 5, 4);
   g.add_edge(3, 6, 1);
   g.add_edge(4, 5, 3);
@@ -81,4 +82,20 @@ int main(int argc, char **argv){
   g.add_edge(3, 9, 10);
 
   g.log();
+
+  unsigned start, end;
+  start = 1;
+  end = 12;
+
+  std::list<unsigned> path = g.shortest_path(start, end);
+
+  std::cout << "*******************\n"
+            << "Shortest path between "
+            << start << " and " << end << ": "
+            << std::endl;
+  
+  for(auto v = path.begin(); v != path.end(); v++){
+    std::cout << *v << " ; ";
+  }
+  std::cout << std::endl;
 }
