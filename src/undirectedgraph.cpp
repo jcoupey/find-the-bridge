@@ -92,6 +92,11 @@ bool UndirectedGraph::has_edge(unsigned first_vertex_id,
   return target != _edges.end();
 };
 
+bool UndirectedGraph::are_connected(unsigned first_vertex_id,
+                                    unsigned second_vertex_id) const{
+  return !this->smallest_path(first_vertex_id, second_vertex_id).empty();
+};
+
 unsigned UndirectedGraph::edge_weight(unsigned first_vertex_id,
                                       unsigned second_vertex_id) const{
   Edge target_edge (first_vertex_id, second_vertex_id, 0);

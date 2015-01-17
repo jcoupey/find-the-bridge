@@ -84,6 +84,9 @@ public:
   bool has_edge(unsigned first_vertex_id,
                 unsigned second_vertex_id) const;
 
+  bool are_connected(unsigned first_vertex_id,
+                     unsigned second_vertex_id) const;
+
   unsigned edge_weight(unsigned first_vertex_id,
                        unsigned second_vertex_id) const;
 
