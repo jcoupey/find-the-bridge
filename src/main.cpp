@@ -80,37 +80,21 @@ int main(int argc, char **argv){
 
   // The brigde
   g.add_edge(3, 9, 10);
-
+  
   g.log();
 
-  unsigned start, end;
-  start = 1;
-  end = 12;
+  // Log bridge search
+  unsigned first = 1;
+  unsigned second = 12;
 
-  std::list<unsigned> path = g.shortest_path(start, end);
-
-  std::cout << "*******************\n"
-            << "Shortest path (distance) between "
-            << start << " and " << end << ": "
-            << std::endl;
-  
-  for(auto v = path.begin(); v != path.end(); v++){
-    std::cout << *v << " ; ";
-  }
-  
-  std::cout << "weight = " << g.path_weight(path) << std::endl;
-
-  std::list<unsigned> bfs_path = g.smallest_path(start, end);
+  std::pair<unsigned, unsigned> bridge = g.find_the_bridge(first, second);
 
   std::cout << "*******************\n"
-            << "Smallest path (number of edges) between "
-            << start << " and " << end << ": "
+            << "Using vertices "
+            << first << " and " << second
+            << ", found bridge: "
+            << std::get<0>(bridge)
+            << " <-> "
+            << std::get<1>(bridge)
             << std::endl;
-  
-  for(auto v = bfs_path.begin(); v != bfs_path.end(); v++){
-    std::cout << *v << " ; ";
-  }
-  
-  std::cout << "weight = " << g.path_weight(bfs_path) << std::endl;
-
 }

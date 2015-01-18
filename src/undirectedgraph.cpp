@@ -339,6 +339,84 @@ std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex,
   return path;
 };
 
+std::pair<unsigned, unsigned> UndirectedGraph::find_the_bridge(unsigned first_vertex,
+                                                               unsigned second_vertex){
+  if(first_vertex == second_vertex){
+    throw  ArgsErrorException("Vertices should be different");
+  }
+
+  // Copy of current objet to further restore its state, should
+  // definitely be improved
+  UndirectedGraph g (*this);
+
+  // Step 1: finding a path between first and second vertex
+  const std::list<unsigned> path = this->smallest_path(first_vertex, second_vertex);
+
+  if(path.empty()){
+    std::string message = "Not path between vertices: "
+      + std::to_string(first_vertex)
+      + " and "
+      + std::to_string(second_vertex);
+    throw  ArgsErrorException(message);
+  }
+
+  // Step 2: removing all edges from the path of step 1.
+  auto vertex_iter = path.cbegin();
+  unsigned vertex = *vertex_iter;
+  unsigned next_vertex;
+
+  // Using this iteration to copy path list in a vector for further
+  // easy access to members
+  std::vector<unsigned> path_vector ({vertex});
+  
+  while(++vertex_iter != path.cend()){
+    next_vertex = *vertex_iter;
+    this->remove_edge(vertex, next_vertex);
+    path_vector.push_back(next_vertex);
+
+    vertex = next_vertex;
+  }
+
+  // First and second vertex should now be unconnected if there is
+  // only one bridge and if they are not both in the same subgraph.
+  if(this->are_connected(first_vertex, second_vertex)){
+    std::string message = "More than one bridge, or "
+      + std::to_string(first_vertex)
+      + " and "
+      + std::to_string(second_vertex)
+      + " are in the same subgraph!";
+    throw  ArgsErrorException(message);
+  }
+
+  // Step 3: using dichotomy to find the bridge in "path_vector"
+  unsigned rank_inf = 0;
+  unsigned rank_sup = path_vector.size() - 1;
+  unsigned rank_middle = (rank_inf + rank_sup) / 2;
+
+  while(rank_sup - rank_inf > 1){
+    // Considered vertices are not yet adjacent
+    if(this->are_connected(path_vector[rank_inf], path_vector[rank_middle])){
+      // Element at rank_middle is in same connected component as
+      // element at rank_inf. Exploring path between rank_middle and
+      // rank_sup
+      rank_inf = rank_middle;
+    }
+    else{
+      // The bridge is between elements at rank_inf and rank_middle
+      rank_sup = rank_middle;
+    }
+    rank_middle = (rank_inf + rank_sup) /2;
+  }
+  
+  std::pair<unsigned, unsigned> bridge =
+    {path_vector[rank_inf], path_vector[rank_sup]};
+
+  // Restore the state of the current graph
+  *this = g;
+
+  return bridge;
+};
+
 void UndirectedGraph::log() const{
   std::cout << "****************** Graph log ******************\n"
     << "* Vertices:\n";

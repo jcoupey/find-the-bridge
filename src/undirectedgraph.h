@@ -98,6 +98,9 @@ public:
   std::list<unsigned> smallest_path(unsigned first_vertex,
                                     unsigned second_vertex) const;
 
+  std::pair<unsigned, unsigned> find_the_bridge(unsigned first_vertex,
+                                                unsigned second_vertex);
+  
   void log() const;
 };
 
