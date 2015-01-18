@@ -28,28 +28,28 @@ private:
   // Edge description
   class Edge{
   public:
-    unsigned _first_vertex_id;
-    unsigned _second_vertex_id;
+    unsigned _first_vertex;
+    unsigned _second_vertex;
     unsigned _weight;
     
-    Edge(unsigned first_vertex_id,
-         unsigned second_vertex_id,
+    Edge(unsigned first_vertex,
+         unsigned second_vertex,
          unsigned weight):
-      _first_vertex_id(std::min(first_vertex_id, second_vertex_id)),
-      _second_vertex_id(std::max(first_vertex_id, second_vertex_id)),
+      _first_vertex(std::min(first_vertex, second_vertex)),
+      _second_vertex(std::max(first_vertex, second_vertex)),
       _weight(weight) {}
     
     // Operator used in a set<Edge>
     bool operator<(const Edge& rhs) const{
-      return (this->_first_vertex_id < rhs._first_vertex_id)
-        or ((this->_first_vertex_id == rhs._first_vertex_id)
-            and (this->_second_vertex_id < rhs._second_vertex_id));
+      return (this->_first_vertex < rhs._first_vertex)
+        or ((this->_first_vertex == rhs._first_vertex)
+            and (this->_second_vertex < rhs._second_vertex));
     };
 
     // Print edge information
     void log() const{
-      std::cout << _first_vertex_id << "<--" << _weight << "-->"
-                << _second_vertex_id
+      std::cout << _first_vertex << "<--" << _weight << "-->"
+                << _second_vertex
                 << " ; ";
     };
   };
@@ -71,32 +71,32 @@ public:
 
   void remove_vertex(unsigned id);
 
-  bool has_vertex(unsigned vertex_id) const;
+  bool has_vertex(unsigned vertex) const;
 
-  std::list<unsigned> neighbours_for_vertex(unsigned vertex_id) const;
+  std::list<unsigned> neighbours_for_vertex(unsigned vertex) const;
 
-  void add_edge(unsigned first_vertex_id,
-                unsigned second_vertex_id,
+  void add_edge(unsigned first_vertex,
+                unsigned second_vertex,
                 unsigned weight);
 
-  void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);
+  void remove_edge(unsigned first_vertex, unsigned second_vertex);
 
-  bool has_edge(unsigned first_vertex_id,
-                unsigned second_vertex_id) const;
+  bool has_edge(unsigned first_vertex,
+                unsigned second_vertex) const;
 
-  bool are_connected(unsigned first_vertex_id,
-                     unsigned second_vertex_id) const;
+  bool are_connected(unsigned first_vertex,
+                     unsigned second_vertex) const;
 
-  unsigned edge_weight(unsigned first_vertex_id,
-                       unsigned second_vertex_id) const;
+  unsigned edge_weight(unsigned first_vertex,
+                       unsigned second_vertex) const;
 
   unsigned path_weight(std::list<unsigned> path) const;
 
-  std::list<unsigned> shortest_path(unsigned first_vertex_id,
-                                    unsigned second_vertex_id) const;
+  std::list<unsigned> shortest_path(unsigned first_vertex,
+                                    unsigned second_vertex) const;
 
-  std::list<unsigned> smallest_path(unsigned first_vertex_id,
-                                    unsigned second_vertex_id) const;
+  std::list<unsigned> smallest_path(unsigned first_vertex,
+                                    unsigned second_vertex) const;
 
   void log() const;
 };

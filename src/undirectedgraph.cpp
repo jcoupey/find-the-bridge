@@ -34,78 +34,78 @@ void UndirectedGraph::remove_vertex(unsigned id){
   }
 };
 
-bool UndirectedGraph::has_vertex(unsigned vertex_id) const{
-  return _vertices.find(vertex_id) != _vertices.end();
+bool UndirectedGraph::has_vertex(unsigned vertex) const{
+  return _vertices.find(vertex) != _vertices.end();
 };
 
-std::list<unsigned> UndirectedGraph::neighbours_for_vertex(unsigned vertex_id) const{
-  if(! this->has_vertex(vertex_id)){
+std::list<unsigned> UndirectedGraph::neighbours_for_vertex(unsigned vertex) const{
+  if(! this->has_vertex(vertex)){
     throw ArgsErrorException("Not a valid vertex id!");
   }
   std::list<unsigned> neighbours;
   for(auto vertex_pair = _vertices.cbegin();
       vertex_pair != _vertices.cend();
       vertex_pair++){
-    if(this->has_edge(vertex_id, vertex_pair->first)){
+    if(this->has_edge(vertex, vertex_pair->first)){
       neighbours.push_back(vertex_pair->first);
     }
   }
   return neighbours;
 };
 
-void UndirectedGraph::add_edge(unsigned first_vertex_id,
-                               unsigned second_vertex_id,
+void UndirectedGraph::add_edge(unsigned first_vertex,
+                               unsigned second_vertex,
                                unsigned weight){
-  if(first_vertex_id == second_vertex_id){
+  if(first_vertex == second_vertex){
     return;
   }
-  auto first_vertex_pair = _vertices.find(first_vertex_id);
-  auto second_vertex_pair = _vertices.find(second_vertex_id);
+  auto first_vertex_pair = _vertices.find(first_vertex);
+  auto second_vertex_pair = _vertices.find(second_vertex);
   if((first_vertex_pair != _vertices.end())
      and (second_vertex_pair != _vertices.end())){
     // Only if given ids are valid vertices ids
-    _edges.emplace(first_vertex_id, second_vertex_id, weight);
+    _edges.emplace(first_vertex, second_vertex, weight);
     // Updating vertices degrees
     first_vertex_pair->second._degree++;
     second_vertex_pair->second._degree++;
   }
 };
 
-void UndirectedGraph::remove_edge(unsigned first_vertex_id,
-                                  unsigned second_vertex_id){
+void UndirectedGraph::remove_edge(unsigned first_vertex,
+                                  unsigned second_vertex){
   // Removing edge
-  Edge target_edge (first_vertex_id, second_vertex_id, 0);
+  Edge target_edge (first_vertex, second_vertex, 0);
   if(_edges.erase(target_edge)){
     // Updating degrees if erase is successful (an edge really exists
     // between the vertices)
-    auto first_vertex_pair = _vertices.find(first_vertex_id);
-    auto second_vertex_pair = _vertices.find(second_vertex_id);
+    auto first_vertex_pair = _vertices.find(first_vertex);
+    auto second_vertex_pair = _vertices.find(second_vertex);
     first_vertex_pair->second._degree--;
     second_vertex_pair->second._degree--;
   }
 };
 
-bool UndirectedGraph::has_edge(unsigned first_vertex_id,
-                               unsigned second_vertex_id) const{
-  Edge target_edge (first_vertex_id, second_vertex_id, 0);
+bool UndirectedGraph::has_edge(unsigned first_vertex,
+                               unsigned second_vertex) const{
+  Edge target_edge (first_vertex, second_vertex, 0);
   auto target = _edges.find(target_edge);
   return target != _edges.end();
 };
 
-bool UndirectedGraph::are_connected(unsigned first_vertex_id,
-                                    unsigned second_vertex_id) const{
-  return !this->smallest_path(first_vertex_id, second_vertex_id).empty();
+bool UndirectedGraph::are_connected(unsigned first_vertex,
+                                    unsigned second_vertex) const{
+  return !this->smallest_path(first_vertex, second_vertex).empty();
 };
 
-unsigned UndirectedGraph::edge_weight(unsigned first_vertex_id,
-                                      unsigned second_vertex_id) const{
-  Edge target_edge (first_vertex_id, second_vertex_id, 0);
+unsigned UndirectedGraph::edge_weight(unsigned first_vertex,
+                                      unsigned second_vertex) const{
+  Edge target_edge (first_vertex, second_vertex, 0);
   auto target = _edges.find(target_edge);
   if(target == _edges.end()){
     std::string message = "Not edge between vertices: "
-      + std::to_string(first_vertex_id)
+      + std::to_string(first_vertex)
       + " and "
-      + std::to_string(second_vertex_id);
+      + std::to_string(second_vertex);
     throw  ArgsErrorException(message);
   }
   else{
@@ -133,21 +133,21 @@ unsigned  UndirectedGraph::path_weight(std::list<unsigned> path) const{
   return weight;
 };
 
-std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
-                                                     unsigned second_vertex_id) const{
+std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex,
+                                                     unsigned second_vertex) const{
 
-  if(first_vertex_id == second_vertex_id){
+  if(first_vertex == second_vertex){
     // Not really interesting
-    std::list<unsigned> path ({first_vertex_id});
+    std::list<unsigned> path ({first_vertex});
     return path;
   }
 
   // Dijkstra algorithm
 
   // Mapping the vertices id to the current shortest distance from
-  // first_vertex_id
+  // first_vertex
   std::map<unsigned, unsigned> shortest_distances;
-  shortest_distances.emplace(first_vertex_id, 0);
+  shortest_distances.emplace(first_vertex, 0);
 
   unsigned inf = std::numeric_limits<unsigned>::max();
   for(auto vertex = _vertices.cbegin(); vertex != _vertices.cend(); ++vertex){
@@ -160,7 +160,7 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
   std::set<unsigned> vertices_to_visit;
   
   for(auto vertex = _vertices.cbegin(); vertex != _vertices.cend(); ++vertex){
-    if(vertex->first != first_vertex_id){
+    if(vertex->first != first_vertex){
       vertices_to_visit.insert(vertex->first);
     }
   }
@@ -171,7 +171,7 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
   // Starting with neighbours of first_vertex
   std::list<unsigned> current_neighbours;
 
-  current_neighbours = this->neighbours_for_vertex(first_vertex_id);
+  current_neighbours = this->neighbours_for_vertex(first_vertex);
 
   for(auto neighbour = current_neighbours.cbegin();
       neighbour != current_neighbours.cend();
@@ -179,10 +179,10 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
     unsigned current_id = *neighbour;
     // Storing shortest distance
     shortest_distances.find(current_id)->second = 
-      this->edge_weight(first_vertex_id, current_id);
+      this->edge_weight(first_vertex, current_id);
   
     // Storing previous vertex on shortest path
-    previous_vertex.emplace(current_id, first_vertex_id);
+    previous_vertex.emplace(current_id, first_vertex);
   }
 
   while(! vertices_to_visit.empty()){
@@ -200,7 +200,7 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
     }
     
     if(min_distance == inf
-       or current_vertex == second_vertex_id){
+       or current_vertex == second_vertex){
       // No accessible vertex remains or wanted vertex is reached
       break;
     }
@@ -241,17 +241,17 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
   // Recomposing path from the end
   std::list<unsigned> path;
 
-  auto prev = previous_vertex.find(second_vertex_id);
+  auto prev = previous_vertex.find(second_vertex);
   if(prev == previous_vertex.end()){
     // Argument vertices are not connected, return empty path
     return path;
   }
   
-  unsigned current_vertex = second_vertex_id;
+  unsigned current_vertex = second_vertex;
   // Adding the end
   path.push_front(current_vertex);
   
-  while(current_vertex != first_vertex_id){
+  while(current_vertex != first_vertex){
     // Getting previous vertex
     current_vertex = previous_vertex.find(current_vertex)->second;
     // Adding
@@ -261,25 +261,25 @@ std::list<unsigned> UndirectedGraph::shortest_path(unsigned first_vertex_id,
   return path;
 };
 
-std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex_id,
-                                                   unsigned second_vertex_id) const{
+std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex,
+                                                   unsigned second_vertex) const{
 
-  if(first_vertex_id == second_vertex_id){
+  if(first_vertex == second_vertex){
     // Not really interesting
-    std::list<unsigned> path ({first_vertex_id});
+    std::list<unsigned> path ({first_vertex});
     return path;
   }
 
   // Applying breadth-first search
 
   // Storing found vertices to avoid cycles
-  std::set<unsigned> found_vertices ({first_vertex_id});
+  std::set<unsigned> found_vertices ({first_vertex});
 
   // Remembering "parent" vertex
   std::map<unsigned, unsigned> parent_vertex;
 
   // FIFO list of vertices yet to visit
-  std::list<unsigned> vertices_to_visit ({first_vertex_id});
+  std::list<unsigned> vertices_to_visit ({first_vertex});
 
   // Neighbours of current vertex
   std::list<unsigned> current_neighbours;
@@ -303,8 +303,8 @@ std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex_id,
         // Storing parent vertex
         parent_vertex.emplace(neighbour_id, current_vertex);
 
-        if(neighbour_id == second_vertex_id){
-          // Found a path to second_vertex_id with smallest number of edges
+        if(neighbour_id == second_vertex){
+          // Found a path to second_vertex with smallest number of edges
           found_end = true;
         }
       }
@@ -325,11 +325,11 @@ std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex_id,
     return path;
   }
   
-  unsigned current_vertex = second_vertex_id;
+  unsigned current_vertex = second_vertex;
   // Adding the end
   path.push_front(current_vertex);
   
-  while(current_vertex != first_vertex_id){
+  while(current_vertex != first_vertex){
     // Getting parent vertex
     current_vertex = parent_vertex.find(current_vertex)->second;
     // Adding
@@ -338,7 +338,6 @@ std::list<unsigned> UndirectedGraph::smallest_path(unsigned first_vertex_id,
   
   return path;
 };
-
 
 void UndirectedGraph::log() const{
   std::cout << "****************** Graph log ******************\n"
